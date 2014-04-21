@@ -1,4 +1,4 @@
-use ecdsa::finitepoint::Point;
+use ecdsa::point::Point;
 
 pub struct Group {
     name: ~str,
