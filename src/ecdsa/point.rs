@@ -15,3 +15,14 @@ impl Point {
         }
     }
 }
+
+impl ::ecdsa::group::Group {
+    fn add(&self, p1: Point, p2: Point) -> Point {
+        match (p1,p2) {
+            (Infinity,p2) => p2,
+            (p1,Infinity) => p1,
+            _ => Infinity
+        }
+    }
+}
+
