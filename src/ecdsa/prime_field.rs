@@ -44,3 +44,44 @@ impl PrimeField {
         return t.clone();
     }
 }
+
+#[test]
+#[should_fail]
+fn fail_when_0() {
+    let p = PrimeField{prime: 1367u.to_biguint().unwrap()};
+    p.inverse(0u.to_biguint().unwrap());
+}
+
+#[test]
+fn inverse_of_1() {
+    let p = PrimeField{prime: 1367u.to_biguint().unwrap()};
+    assert!(p.inverse(1u.to_biguint().unwrap()) == 1u.to_biguint().unwrap());
+}
+
+/*
+    it 'when given 1 returns 1' do
+      expect(field.inverse(1)).to eq 1
+    end
+
+    def check_inversion(n)
+      inverse = field.inverse(n)
+      expect(field).to include inverse
+      expect(field.mod(inverse * n)).to eq 1
+    end
+
+    it 'when given prime - 1 returns the inverse' do
+      check_inversion prime - 1
+    end
+
+    it 'when given 44 returns the inverse' do
+      check_inversion 44
+    end
+
+    context 'for large primes' do
+      let(:prime) { 0xFFFFFFFF_FFFFFFFF_FFFFFFFF_FFFFFFFF_FFFFFFFF_FFFFFFFF_FFFFFFFE_FFFFFC2F }
+
+      it 'still works' do
+        check_inversion 0xd4418917_5bd60c4f_6ead9f5f_301fd4a9_a5ece4c4_7ab45186_11b4c650_77ba7a6b
+      end
+    end
+  end*/
