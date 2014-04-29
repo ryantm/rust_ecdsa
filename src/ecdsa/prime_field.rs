@@ -1,8 +1,11 @@
 extern crate num;
+use num::bigint::BigInt;
 use num::bigint::BigUint;
+use num::bigint::Plus;
 use num::bigint::ToBigUint;
 //use num::bigint::{Zero};
 use std::num::Zero;
+use std::num::One;
 use num::Integer;
 
 struct PrimeField {
@@ -36,19 +39,55 @@ function inverse(a, n)
 
     fn inverse(&self, n: &BigUint) -> BigUint {
         assert!(!n.is_zero(), "0 has no multiplicative inverse.");
+        
+        let mut r : BigInt = BigInt::from_biguint(Plus, (*n).clone());
+        let mut newr : BigInt = BigInt::from_biguint(Plus, self.prime.clone());
+        let mut s : BigInt = One::one();
+        let mut news : BigInt = Zero::zero();
+        let mut t : BigInt = Zero::zero();
+        let mut newt : BigInt = One::one();
 
-        let (t, newt) = (0u.to_biguint().unwrap(), 1u.to_biguint().unwrap());
-        let (r, newr) = (self.prime.clone(), (*n).clone());
+        /*let mut rs : (BigUint, BigUint) = ((*n).clone(), self.prime.clone());
+        let mut ss : (BigUint, BigUint) = (One::one(), Zero::zero());
+        let mut ts : (BigUint, BigUint) = (Zero::zero(), One::one());
+         */
 
-        while !newr.is_zero() {
+        while newr > Zero::zero() {
             let quotient = r / newr;
-            let (t, newt) = (newt.clone(), t - quotient * newt);
-            let (r, newr) = (newr.clone(), r - quotient * newr);
+            println!("q:{}", quotient);
+
+            let temp = r.clone();
+            r = newr.clone();
+            newr = temp - quotient * newr;
+            
+            println!("did first");
+            let temp = s.clone();
+            s = news.clone();
+            news = temp - quotient * news;
+
+            let temp = t.clone();
+            t = newt.clone();
+            newt = temp - quotient * newt;
+
+            /*
+            (r, newr) = (newr.clone(), r - quotient * newr);
+            (s, news) = (news.clone(), s - quotient * news);
+            (t, newt) = (newt.clone(), t - quotient * newt);
+             */
+
+            /*let swap = |(current, new): (BigUint, BigUint)| -> (BigUint, BigUint) {
+                (new.clone(), current - quotient * new)
+            }*/
+            /*rs = (rs.val1().clone(), rs.val0() - quotient * rs.val1());
+            ss = (ss.val1().clone(), ss.val0() - quotient * ss.val1());
+            ts = (ts.val1().clone(), ts.val0() - quotient * ts.val1());*/
+            println!("r:{} s:{} t:{}", r, s, t);
+            println!("newr:{} news:{} newt:{}", newr, news, newt);
         }
         println!("finished loop!");
-        if r > 1u.to_biguint().unwrap() { fail!("prime is not invertible") }
-        if t < Zero::zero() { let t = t + (*n).clone(); }
-        return t.clone();
+        if r > One::one() { fail!("prime is not invertible") }
+        //if t < Zero::zero() { let t = t + (*n).clone(); }
+        return self.modulo(s.to_biguint().unwrap());
     }
 }
 
@@ -56,19 +95,29 @@ function inverse(a, n)
 #[should_fail]
 fn fail_when_0() {
     let p = PrimeField{prime: 1367u.to_biguint().unwrap()};
-    p.inverse(&0u.to_biguint().unwrap());
+    p.inverse(~Zero::zero());
 }
 
 #[test]
 fn inverse_of_1() {
     let p = PrimeField{prime: 1367u.to_biguint().unwrap()};
-    assert!(p.inverse(&1u.to_biguint().unwrap()) == 1u.to_biguint().unwrap());
+    assert!(p.inverse(~One::one()) == One::one());
+}
+
+#[cfg(test)]
+fn check_inversion(n: BigUint) {
+    let p = PrimeField{prime: 1367u.to_biguint().unwrap()};
+    let inverse = p.inverse(&n);
+    assert!(p.include(inverse.clone()));
+    assert!(p.modulo(inverse * n) == One::one());
+}
+
+#[test]
+fn check_prime_minus_1() {
+    check_inversion(1367u.to_biguint().unwrap() - One::one());
 }
 
 /*
-    it 'when given 1 returns 1' do
-      expect(field.inverse(1)).to eq 1
-    end
 
     def check_inversion(n)
       inverse = field.inverse(n)
