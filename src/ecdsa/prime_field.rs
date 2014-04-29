@@ -1,47 +1,32 @@
 extern crate num;
 use num::bigint::BigInt;
-use num::bigint::BigUint;
 use num::bigint::Plus;
-use num::bigint::ToBigUint;
-//use num::bigint::{Zero};
+use num::bigint::ToBigInt;
 use std::num::Zero;
 use std::num::One;
 use num::Integer;
 
 struct PrimeField {
-    prime: BigUint
+    prime: BigInt
 }
 
 impl PrimeField {
-    fn include(&self, integer: BigUint) -> bool {
+    fn include(&self, integer: BigInt) -> bool {
         //e.is_a?(Integer) && e >= 0 && e < prime
         integer < self.prime
     }
 
-    fn modulo(&self, integer: BigUint) -> BigUint {
+    fn modulo(&self, integer: BigInt) -> BigInt {
         
         //num::mod_floor(self.prime, integer)
         integer.mod_floor(&self.prime)
     }
 
-/*
-function inverse(a, n)
-    t := 0;     newt := 1;    
-    r := n;     newr := a;    
-    while newr ≠ 0
-        quotient := r div newr
-        (t, newt) := (newt, t - quotient * newt) 
-        (r, newr) := (newr, r - quotient * newr)
-    if r > 1 then return "a is not invertible"
-    if t < 0 then t := t + n
-    return t
-*/
-
-    fn inverse(&self, n: &BigUint) -> BigUint {
+    fn inverse(&self, n: &BigInt) -> BigInt {
         assert!(!n.is_zero(), "0 has no multiplicative inverse.");
         
-        let mut r : BigInt = BigInt::from_biguint(Plus, (*n).clone());
-        let mut newr : BigInt = BigInt::from_biguint(Plus, self.prime.clone());
+        let mut r : BigInt = (*n).clone();
+        let mut newr : BigInt = self.prime.clone();
         let mut s : BigInt = One::one();
         let mut news : BigInt = Zero::zero();
         let mut t : BigInt = Zero::zero();
@@ -87,26 +72,26 @@ function inverse(a, n)
         println!("finished loop!");
         if r > One::one() { fail!("prime is not invertible") }
         //if t < Zero::zero() { let t = t + (*n).clone(); }
-        return self.modulo(s.to_biguint().unwrap());
+        return self.modulo(s);
     }
 }
 
 #[test]
 #[should_fail]
 fn fail_when_0() {
-    let p = PrimeField{prime: 1367u.to_biguint().unwrap()};
+    let p = PrimeField{prime: 1367u.to_bigint().unwrap()};
     p.inverse(~Zero::zero());
 }
 
 #[test]
 fn inverse_of_1() {
-    let p = PrimeField{prime: 1367u.to_biguint().unwrap()};
+    let p = PrimeField{prime: 1367u.to_bigint().unwrap()};
     assert!(p.inverse(~One::one()) == One::one());
 }
 
 #[cfg(test)]
-fn check_inversion(n: BigUint) {
-    let p = PrimeField{prime: 1367u.to_biguint().unwrap()};
+fn check_inversion(prime: BigInt, n: BigInt) {
+    let p = PrimeField{prime: prime};
     let inverse = p.inverse(&n);
     assert!(p.include(inverse.clone()));
     assert!(p.modulo(inverse * n) == One::one());
@@ -114,20 +99,24 @@ fn check_inversion(n: BigUint) {
 
 #[test]
 fn check_prime_minus_1() {
-    check_inversion(1367u.to_biguint().unwrap() - One::one());
+    check_inversion(1367u.to_bigint().unwrap(), 1367u.to_bigint().unwrap() - One::one());
+}
+
+#[test]
+fn check_44() {
+    check_inversion(1367u.to_bigint().unwrap(), 44u.to_bigint().unwrap());
 }
 
 /*
+#[test]
+fn check_large_prime() {
+    check_inversion(
+        0xFFFFFFFF_FFFFFFFF_FFFFFFFF_FFFFFFFF_FFFFFFFF_FFFFFFFF_FFFFFFFE_FFFFFC2F,
+        0xd4418917_5bd60c4f_6ead9f5f_301fd4a9_a5ece4c4_7ab45186_11b4c650_77ba7a6b);
+}*/
 
-    def check_inversion(n)
-      inverse = field.inverse(n)
-      expect(field).to include inverse
-      expect(field.mod(inverse * n)).to eq 1
-    end
+/*
 
-    it 'when given prime - 1 returns the inverse' do
-      check_inversion prime - 1
-    end
 
     it 'when given 44 returns the inverse' do
       check_inversion 44
