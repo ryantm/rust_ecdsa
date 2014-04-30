@@ -5,6 +5,7 @@ use num::bigint::ToBigInt;
 use std::num::Zero;
 use std::num::One;
 use num::Integer;
+use std::num::from_str_radix;
 
 struct PrimeField {
     prime: BigInt
@@ -12,13 +13,10 @@ struct PrimeField {
 
 impl PrimeField {
     fn include(&self, integer: BigInt) -> bool {
-        //e.is_a?(Integer) && e >= 0 && e < prime
-        integer < self.prime
+        integer >= Zero::zero() && integer < self.prime
     }
 
     fn modulo(&self, integer: BigInt) -> BigInt {
-        
-        //num::mod_floor(self.prime, integer)
         integer.mod_floor(&self.prime)
     }
 
@@ -107,13 +105,13 @@ fn check_44() {
     check_inversion(1367u.to_bigint().unwrap(), 44u.to_bigint().unwrap());
 }
 
-/*
+
 #[test]
 fn check_large_prime() {
     check_inversion(
-        0xFFFFFFFF_FFFFFFFF_FFFFFFFF_FFFFFFFF_FFFFFFFF_FFFFFFFF_FFFFFFFE_FFFFFC2F,
-        0xd4418917_5bd60c4f_6ead9f5f_301fd4a9_a5ece4c4_7ab45186_11b4c650_77ba7a6b);
-}*/
+        from_str_radix::<BigInt>("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F", 16).unwrap(),
+        from_str_radix::<BigInt>("d44189175bd60c4f6ead9f5f301fd4a9a5ece4c47ab4518611b4c65077ba7a6b",16).unwrap());
+}
 
 /*
 
