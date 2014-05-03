@@ -33,7 +33,7 @@ impl PrimeField {
             let temp = r.clone();
             r = newr.clone();
             newr = temp - quotient * newr;
-            
+
             let temp = s.clone();
             s = news.clone();
             news = temp - quotient * news;
@@ -44,6 +44,21 @@ impl PrimeField {
         }
         if r != One::one() { fail!("prime is not invertible") }
         return self.modulo(s);
+    }
+
+    fn power(&self, n:&BigInt, m:&BigInt)-> BigInt {
+        let mut result: BigInt = One::one();
+        let mut n: BigInt = n.clone();
+        let mut m: BigInt = m.clone();
+        
+        while m > Zero::zero() {
+            if m.is_odd() {
+                result = self.modulo(result * n)
+            }
+            n = self.modulo(n*n);
+            m = m >> 1
+        }
+        result
     }
 }
 
@@ -83,4 +98,11 @@ fn check_large_prime() {
     check_inversion(
         from_str_radix("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F", 16).unwrap(),
         from_str_radix("d44189175bd60c4f6ead9f5f301fd4a9a5ece4c47ab4518611b4c65077ba7a6b", 16).unwrap());
+}
+
+#[test]
+fn check_power() {
+    let p = PrimeField{prime: from_str("1367").unwrap()};
+    assert!(p.power(&5u.to_bigint().unwrap(),&Zero::zero()) == One::one());
+    assert!(p.power(&Zero::zero(),&Zero::zero()) == One::one());
 }
