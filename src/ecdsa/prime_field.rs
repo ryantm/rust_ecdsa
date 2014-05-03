@@ -46,7 +46,7 @@ impl PrimeField {
         return self.modulo(s);
     }
 
-    fn power(&self, n:&BigInt, m:&BigInt)-> BigInt {
+    fn power(&self, n:&BigInt, m:&BigInt) -> BigInt {
         let mut result: BigInt = One::one();
         let mut n: BigInt = n.clone();
         let mut m: BigInt = m.clone();
@@ -59,6 +59,10 @@ impl PrimeField {
             m = m >> 1
         }
         result
+    }
+
+    fn square(&self, n:&BigInt) -> BigInt {
+        self.modulo(*n * *n)
     }
 }
 
@@ -105,4 +109,12 @@ fn check_power() {
     let p = PrimeField{prime: from_str("1367").unwrap()};
     assert!(p.power(&5u.to_bigint().unwrap(),&Zero::zero()) == One::one());
     assert!(p.power(&Zero::zero(),&Zero::zero()) == One::one());
+}
+
+#[test]
+fn check_square() {
+    let p = PrimeField{prime: from_str("1367").unwrap()};
+    assert!(p.square(&Zero::zero()) == Zero::zero());
+    assert!(p.square(&One::one()) == One::one());
+    assert!(p.square(&1311u.to_bigint().unwrap()) == 402u.to_bigint().unwrap());
 }
