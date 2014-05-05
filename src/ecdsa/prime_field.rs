@@ -1,6 +1,5 @@
 extern crate num;
 use num::bigint::BigInt;
-use num::bigint::Plus;
 use num::bigint::ToBigInt;
 use std::num::Zero;
 use std::num::One;
@@ -73,13 +72,13 @@ impl PrimeField {
 #[should_fail]
 fn fail_when_0() {
     let p = PrimeField{prime: 1367u.to_bigint().unwrap()};
-    p.inverse(~Zero::zero());
+    p.inverse(&Zero::zero());
 }
 
 #[test]
 fn inverse_of_1() {
     let p = PrimeField{prime: 1367u.to_bigint().unwrap()};
-    assert!(p.inverse(~One::one()) == One::one());
+    assert!(p.inverse(&One::one()) == One::one());
 }
 
 #[cfg(test)]
