@@ -7,7 +7,7 @@ use std::num::One;
 use num::Integer;
 use std::num::from_str_radix;
 
-struct PrimeField {
+pub struct PrimeField {
     prime: BigInt
 }
 
@@ -16,11 +16,11 @@ impl PrimeField {
         integer >= Zero::zero() && integer < self.prime
     }
 
-    fn modulo(&self, integer: BigInt) -> BigInt {
+    pub fn modulo(&self, integer: &BigInt) -> BigInt {
         integer.mod_floor(&self.prime)
     }
 
-    fn inverse(&self, n: &BigInt) -> BigInt {
+    pub fn inverse(&self, n: &BigInt) -> BigInt {
         assert!(!n.is_zero(), "0 has no multiplicative inverse.");
         
         let (mut r, mut newr) : (BigInt, BigInt) = ((*n).clone(), self.prime.clone());
@@ -43,7 +43,7 @@ impl PrimeField {
             newt = temp - quotient * newt;
         }
         if r != One::one() { fail!("prime is not invertible") }
-        return self.modulo(s);
+        return self.modulo(&s);
     }
 
     fn power(&self, n:&BigInt, m:&BigInt) -> BigInt {
@@ -53,17 +53,20 @@ impl PrimeField {
         
         while m > Zero::zero() {
             if m.is_odd() {
-                result = self.modulo(result * n)
+                result = self.modulo(&(result * n))
             }
-            n = self.modulo(n*n);
+            n = self.modulo(&(n*n));
             m = m >> 1
         }
         result
     }
 
     fn square(&self, n:&BigInt) -> BigInt {
-        self.modulo(*n * *n)
+        self.modulo(&(*n * *n))
     }
+    
+    
+    
 }
 
 #[test]
@@ -84,7 +87,7 @@ fn check_inversion(prime: BigInt, n: BigInt) {
     let p = PrimeField{prime: prime};
     let inverse = p.inverse(&n);
     assert!(p.include(inverse.clone()));
-    assert!(p.modulo(inverse * n) == One::one());
+    assert!(p.modulo(&(inverse * n)) == One::one());
 }
 
 #[test]
