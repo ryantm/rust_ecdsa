@@ -7,7 +7,7 @@ use num::Integer;
 use std::num::from_str_radix;
 
 pub struct PrimeField {
-    prime: BigInt
+    pub prime: BigInt
 }
 
 impl PrimeField {

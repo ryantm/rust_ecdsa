@@ -2,6 +2,9 @@ extern crate num;
 use num::bigint::BigInt;
 use num::bigint::ToBigInt;
 use ecdsa::group::Group;
+use ecdsa::prime_field::PrimeField;
+use std::num::from_str_radix;
+use std::num::Zero;
 
 #[deriving(Eq,Clone)]
 pub enum Point {
@@ -55,3 +58,34 @@ impl ::ecdsa::group::Group {
     }
 }
 
+#[test]
+fn check_adding_to_infinity() {
+    let g = Group{name: ~"secp256k1", 
+                  generator: Finite( 
+                      from_str_radix("79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798", 16).unwrap(),
+                      from_str_radix("483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8", 16).unwrap()),
+                  field: PrimeField{prime: from_str_radix("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F",16).unwrap()},
+                  param_a: Zero::zero()};
+
+    assert!(g.add(&g.generator, &Infinity) == g.generator);
+}
+/*  describe '#add_to_point' do
+    context 'when adding point + infinity' do
+      it 'returns the point' do
+        expect(group.generator.add_to_point(group.infinity)).to eq group.generator
+      end
+    end
+
+    context 'when adding infinity + point' do
+      it 'returns the point' do
+        expect(group.infinity.add_to_point(group.generator)).to eq group.generator
+      end
+    end
+
+    context 'when adding the generator to itself' do
+      it 'returns the double' do
+        expect(group.generator.add_to_point(group.generator)).to eq group.generator.double
+      end
+    end
+  end
+*/
