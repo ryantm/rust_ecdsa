@@ -60,7 +60,7 @@ impl ::ecdsa::group::Group {
 
 #[test]
 fn check_adding_to_infinity() {
-    let g = Group{name: ~"secp256k1", 
+    let g = Group{name: "secp256k1".to_owned(), 
                   generator: Finite( 
                       from_str_radix("79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798", 16).unwrap(),
                       from_str_radix("483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8", 16).unwrap()),
@@ -69,6 +69,7 @@ fn check_adding_to_infinity() {
 
     assert!(g.add(&g.generator, &Infinity) == g.generator);
 }
+
 /*  describe '#add_to_point' do
     context 'when adding point + infinity' do
       it 'returns the point' do
