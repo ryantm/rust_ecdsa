@@ -56,6 +56,15 @@ impl ::ecdsa::group::Group {
             }
         }
     }
+    
+    fn point_satisfies_equation(&self, p: &Point) -> bool {
+        match p.clone() {
+            Infinity => false,
+            Finite(x,y) => 
+                self.field.square(&y) == 
+                self.field.modulo(&(x * x * x + self.param_a * x * self.param_b))
+        }
+    }
 }
 
 fn group() -> Group {
@@ -65,7 +74,8 @@ fn group() -> Group {
             from_str_radix("79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798", 16).unwrap(),
             from_str_radix("483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8", 16).unwrap()),
         field: PrimeField{prime: from_str_radix("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F",16).unwrap()},
-        param_a: Zero::zero()
+        param_a: Zero::zero(),
+        param_b: 7u.to_bigint().unwrap(),
     }
 }
 

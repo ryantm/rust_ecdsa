@@ -60,12 +60,9 @@ impl PrimeField {
         result
     }
 
-    fn square(&self, n:&BigInt) -> BigInt {
+    pub fn square(&self, n:&BigInt) -> BigInt {
         self.modulo(&(*n * *n))
     }
-    
-    
-    
 }
 
 #[test]
