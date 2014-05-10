@@ -44,6 +44,13 @@ impl ::ecdsa::group::Group {
         }
     }
 
+    fn negate(&self, p: &Point) -> Point {
+        match p.clone() {
+            Infinity => Infinity,
+            Finite(x,y) => Finite(x, self.field.modulo(&-y)),
+        }
+    }
+
     fn double(&self, p1: &Point) -> Point {
         match p1.clone() {
             Infinity => p1.clone(),
@@ -95,4 +102,17 @@ fn check_adding_from_infinity() {
 fn check_adding_to_self() {
     let g = group();
     assert!(g.add(&g.generator, &g.generator) == g.double(&g.generator));
+}
+
+#[test]
+fn check_negate() {
+    let g = group();
+    assert!(g.negate(&Infinity) == Infinity);
+    match (g.negate(&g.generator), g.generator.clone()) {
+        (Finite(x,y),Finite(gx,gy)) => {    
+            assert!(x == gx);
+            assert!(y == g.field.modulo(&-gy));
+        },
+        _ => fail!("Group does not have finite generator or generator inverse."),
+    }
 }
