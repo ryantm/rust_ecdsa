@@ -5,6 +5,7 @@ use ecdsa::group::Group;
 use ecdsa::prime_field::PrimeField;
 use std::num::from_str_radix;
 use std::num::Zero;
+use num::Integer;
 
 #[deriving(Eq,Clone)]
 pub enum Point {
@@ -62,6 +63,21 @@ impl ::ecdsa::group::Group {
                 Finite(new_x, new_y)
             }
         }
+    }
+
+    fn multiply_by_scalar(&self, p1: &Point, i: &BigInt) -> Point {
+        if (i < &Zero::zero()) { fail!("Scalar is negative.") };
+        let mut result = Infinity;
+        let mut v = p1.clone();
+        let mut i = i.clone();
+        while i > Zero::zero() {
+            if i.is_odd() {
+                result = self.add(&result, &v)
+            }
+            v = self.double(&v);
+            i = i >> 1;
+        }
+        result
     }
     
     fn point_satisfies_equation(&self, p: &Point) -> bool {
