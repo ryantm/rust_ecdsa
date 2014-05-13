@@ -133,3 +133,19 @@ fn check_negate() {
         _ => fail!("Group does not have finite generator or generator inverse."),
     }
 }
+
+#[test]
+fn check_multiply_by_scalar() {
+    let k = 2u.to_bigint().unwrap();
+    let g = group();
+    assert!(g.multiply_by_scalar(&g.generator, &k) != Infinity);
+}
+
+#[test]
+fn check_coords() {
+    assert!(Infinity.coords() == None);
+    let g = group();
+    assert!(g.generator.coords().unwrap() == 
+            (from_str_radix::<BigInt>("79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798", 16).unwrap(),
+             from_str_radix::<BigInt>("483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8", 16).unwrap()));
+}
