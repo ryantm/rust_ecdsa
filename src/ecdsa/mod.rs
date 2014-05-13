@@ -43,7 +43,7 @@ pub fn sign(g: Group, private_key: BigInt, digest: BigInt, temporary_key: BigInt
     
     match r_point {
         Infinity => return None,
-        Finite(rx,ry) => {
+        Finite(rx,_) => {
             // Steps 2 and 3p
             let point_field = PrimeField {prime: g.order};
             let r = point_field.modulo(&rx);
