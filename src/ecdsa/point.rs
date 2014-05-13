@@ -65,7 +65,7 @@ impl ::ecdsa::group::Group {
         }
     }
 
-    fn multiply_by_scalar(&self, p1: &Point, i: &BigInt) -> Point {
+    pub fn multiply_by_scalar(&self, p1: &Point, i: &BigInt) -> Point {
         if (i < &Zero::zero()) { fail!("Scalar is negative.") };
         let mut result = Infinity;
         let mut v = p1.clone();
@@ -99,6 +99,7 @@ fn group() -> Group {
         field: PrimeField{prime: from_str_radix("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F",16).unwrap()},
         param_a: Zero::zero(),
         param_b: 7u.to_bigint().unwrap(),
+        order: from_str_radix("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141", 16).unwrap(),
     }
 }
 

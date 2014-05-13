@@ -9,4 +9,5 @@ pub struct Group {
     pub field: PrimeField,
     pub param_a: BigInt,
     pub param_b: BigInt,
+    pub order: BigInt,
 }
