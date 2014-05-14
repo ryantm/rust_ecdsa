@@ -4,6 +4,7 @@ use ecdsa::group::Group;
 use ecdsa::prime_field::PrimeField;
 use std::num::from_str_radix;
 use std::num::Zero;
+use std::num::One;
 use num::Integer;
 use ecdsa::signature::Signature;
 use ecdsa::point::Infinity;
@@ -61,6 +62,38 @@ pub fn sign(g: Group, private_key: BigInt, digest: BigInt, temporary_key: BigInt
             }
 
             Some(Signature {r:r,s:s})
+        }
+    }
+}
+
+
+fn group() -> Group {
+    Group {
+        name: "secp112r1".to_owned(), 
+        generator: Finite( 
+            from_str_radix("09487239995A5EE76B55F9C2F098", 16).unwrap(),
+            from_str_radix("A89CE5AF8724C0A23E0E0FF77500", 16).unwrap()),
+        field: PrimeField{prime: from_str_radix("DB7C2ABF62E35E668076BEAD208B",16).unwrap()},
+        param_a: from_str_radix("DB7C2ABF62E35E668076BEAD2088",16).unwrap(),
+        param_b: from_str_radix("659EF8BA043916EEDE8911702B22",16).unwrap(),
+        order: from_str_radix("DB7C2ABF62E35E7628DFAC6561C5", 16).unwrap(),
+        
+    }
+}
+
+#[test]
+fn check_sign_returns_none_if_s_is_zero() {
+    let g = group();
+    let private_key: BigInt = One::one();
+    let temporary_key: BigInt = One::one();
+    let r_point = g.multiply_by_scalar(&g.generator, &temporary_key);
+    match r_point {
+        Infinity => fail!("Inifity unexpected"),
+        Finite(rx, _) => {
+            let prime_field = PrimeField{prime:g.order.clone()};
+            let r = prime_field.modulo(&rx);
+            let e = -(r * private_key);
+            assert!(sign(g,private_key,e, temporary_key) == None);
         }
     }
 }
