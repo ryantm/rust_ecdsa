@@ -14,6 +14,7 @@ pub mod group;
 pub mod point;
 pub mod prime_field;
 pub mod signature;
+pub mod verify;
 
 /*
   # Produces an ECDSA signature.
@@ -23,7 +24,7 @@ pub mod signature;
   # @param group (Group) The curve that is being used.
   # @param private_key (Integer) The private key.  (The number of times to add
   #   the generator point to itself to get the public key.)
-  # @param digest (String or Integer)
+  # @param digest (Integer)
   #   A digest of the message to be signed, usually generated with a hashing algorithm
   #   like SHA2.  The same algorithm must be used when verifying the signature.
   # @param temporary_key (Integer)

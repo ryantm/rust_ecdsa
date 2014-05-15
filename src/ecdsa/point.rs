@@ -23,7 +23,7 @@ impl Point {
 }
 
 impl ::ecdsa::group::Group {
-    fn add(&self, p1: &Point, p2: &Point) -> Point {
+    pub fn add(&self, p1: &Point, p2: &Point) -> Point {
         let ref field = self.field;
         match (p1.clone(),p2.clone()) {
             (Infinity,p2) => p2,

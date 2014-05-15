@@ -11,8 +11,8 @@ pub struct PrimeField {
 }
 
 impl PrimeField {
-    fn include(&self, integer: BigInt) -> bool {
-        integer >= Zero::zero() && integer < self.prime
+    pub fn include(&self, integer: &BigInt) -> bool {
+        *integer >= Zero::zero() && *integer < self.prime
     }
 
     pub fn modulo(&self, integer: &BigInt) -> BigInt {
@@ -82,7 +82,7 @@ fn inverse_of_1() {
 fn check_inversion(prime: BigInt, n: BigInt) {
     let p = PrimeField{prime: prime};
     let inverse = p.inverse(&n);
-    assert!(p.include(inverse.clone()));
+    assert!(p.include(&inverse));
     assert!(p.modulo(&(inverse * n)) == One::one());
 }
 
