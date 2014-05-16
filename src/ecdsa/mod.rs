@@ -67,6 +67,43 @@ pub fn sign(g: Group, private_key: BigInt, digest: BigInt, temporary_key: BigInt
     }
 }
 
+// TODO finish normalize digest
+fn normalize_digest(digest: &[u8], bit_length: int) -> BigInt {
+    let digest_bit_length = digest.len() * 8;
+    let num = from_str_radix::<BigInt>(digest, 8);
+    match num {
+        Some(num) => {
+
+            if digest_bit_length <= bit_length {
+                num
+            } else {
+                num >> (digest_bit_length - bit_length)
+            }
+        },
+        None => fail!("invalid octet string")            
+    }
+}
+
+/*
+  def self.normalize_digest(digest, bit_length)
+    if digest.is_a?(String)
+      digest = digest.dup.force_encoding('BINARY')
+      digest_bit_length = digest.size * 8
+      num = Format::IntegerOctetString.decode(digest)
+
+      if digest_bit_length <= bit_length
+        num
+      else
+        num >> (digest_bit_length - bit_length)
+      end
+    elsif digest.is_a?(Integer)
+      digest
+    else
+      raise ArgumentError, 'Digest must be a string or integer.'
+    end
+  end
+*/
+
 
 fn group() -> Group {
     Group {
