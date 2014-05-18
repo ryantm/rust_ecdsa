@@ -1,11 +1,9 @@
 use num::bigint::BigInt;
-use num::bigint::ToBigInt;
 use ecdsa::group::Group;
 use ecdsa::prime_field::PrimeField;
 use std::num::from_str_radix;
 use std::num::Zero;
 use std::num::One;
-use num::Integer;
 use ecdsa::signature::Signature;
 use ecdsa::point::Infinity;
 use ecdsa::point::Finite;
@@ -67,10 +65,11 @@ pub fn sign(g: Group, private_key: BigInt, digest: BigInt, temporary_key: BigInt
     }
 }
 
+/*
 // TODO finish normalize digest
 fn normalize_digest(digest: &[u8], bit_length: int) -> BigInt {
     let digest_bit_length = digest.len() * 8;
-    let num = from_str_radix::<BigInt>(digest, 8);
+    let num = BigInt::parse_bytes(digest, 8);
     match num {
         Some(num) => {
 
@@ -83,7 +82,7 @@ fn normalize_digest(digest: &[u8], bit_length: int) -> BigInt {
         None => fail!("invalid octet string")            
     }
 }
-
+*/
 /*
   def self.normalize_digest(digest, bit_length)
     if digest.is_a?(String)

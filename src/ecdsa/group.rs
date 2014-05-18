@@ -1,5 +1,4 @@
 use ecdsa::point::Point;
-use ecdsa::point::Finite;
 use ecdsa::prime_field::PrimeField;
 use num::bigint::BigInt;
 
