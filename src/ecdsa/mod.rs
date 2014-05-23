@@ -5,7 +5,6 @@ use ecdsa::prime_field::PrimeField;
 use std::num::from_str_radix;
 use std::num::Zero;
 use std::num::One;
-use num::Integer;
 use ecdsa::signature::Signature;
 use ecdsa::point::Infinity;
 use ecdsa::point::Finite;

@@ -14,8 +14,8 @@ pub enum Point {
 }
 
 impl Point {
-    fn coords(self) -> Option<(BigInt,BigInt)> {
-        match self {
+    fn coords(&self) -> Option<(BigInt,BigInt)> {
+        match self.clone() {
             Finite(x,y) => { Some((x,y))},
             Infinity => { None }
         }
@@ -66,7 +66,7 @@ impl ::ecdsa::group::Group {
     }
 
     pub fn multiply_by_scalar(&self, p1: &Point, i: &BigInt) -> Point {
-        if (i < &Zero::zero()) { fail!("Scalar is negative.") };
+        if i < &Zero::zero() { fail!("Scalar is negative.") };
         let mut result = Infinity;
         let mut v = p1.clone();
         let mut i = i.clone();
