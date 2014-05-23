@@ -38,7 +38,7 @@ pub mod verify;
   #   signature will be 0, in which case the method returns nil.  If that happens,
   #   you should generate a new temporary key and try again.
 */
-pub fn sign(g: Group, private_key: BigInt, digest: BigInt, temporary_key: BigInt) -> Option<Signature> {
+pub fn sign(g: Group, private_key: BigInt, digest: &[u8], temporary_key: BigInt) -> Option<Signature> {
     // Second part of step 1: Select ephemeral elliptic curve key pair
     // temporary_key was already selected for us by the caller
     let r_point = g.multiply_by_scalar(&g.generator, &temporary_key);
@@ -54,10 +54,10 @@ pub fn sign(g: Group, private_key: BigInt, digest: BigInt, temporary_key: BigInt
 
             // Step 5
             // TODO normalize digest
-            //    e = normalize_digest(digest, group.bit_length)
+            let e = normalize_digest(digest, bit_length(g.field.prime));
             
             // Step 6
-            let s = point_field.modulo(&(point_field.inverse(&temporary_key) * (digest + r * private_key)));
+            let s = point_field.modulo(&(point_field.inverse(&temporary_key) * (e + r * private_key)));
             if s == Zero::zero() {
                 return None;
             }
@@ -67,43 +67,25 @@ pub fn sign(g: Group, private_key: BigInt, digest: BigInt, temporary_key: BigInt
     }
 }
 
-// TODO finish normalize digest
-fn normalize_digest(digest: &[u8], bit_length: int) -> BigInt {
-    let digest_bit_length = digest.len() * 8;
-    let num = from_str_radix::<BigInt>(digest, 8);
-    match num {
-        Some(num) => {
-
-            if digest_bit_length <= bit_length {
-                num
-            } else {
-                num >> (digest_bit_length - bit_length)
-            }
-        },
-        None => fail!("invalid octet string")            
+fn bit_length(integer: BigInt) -> uint {
+    let mut length: uint = Zero::zero();
+    let mut integer: BigInt = integer.clone();
+    while integer > Zero::zero() {
+        length += One::one();
+        integer = integer >> One::one();
     }
+    length
 }
 
-/*
-  def self.normalize_digest(digest, bit_length)
-    if digest.is_a?(String)
-      digest = digest.dup.force_encoding('BINARY')
-      digest_bit_length = digest.size * 8
-      num = Format::IntegerOctetString.decode(digest)
-
-      if digest_bit_length <= bit_length
+fn normalize_digest(digest: &[u8], bit_length: uint) -> BigInt {
+    let digest_bit_length = digest.len() * 8;
+    let num = digest.iter().fold(0u.to_bigint().unwrap(), |n, &b| (n << 8 ) + b.to_bigint().unwrap());
+    if digest_bit_length <= bit_length {
         num
-      else
+    } else {
         num >> (digest_bit_length - bit_length)
-      end
-    elsif digest.is_a?(Integer)
-      digest
-    else
-      raise ArgumentError, 'Digest must be a string or integer.'
-    end
-  end
-*/
-
+    }
+}
 
 fn group() -> Group {
     Group {
@@ -131,7 +113,7 @@ fn check_sign_returns_none_if_s_is_zero() {
             let prime_field = PrimeField{prime:g.order.clone()};
             let r = prime_field.modulo(&rx);
             let e = -(r * private_key);
-            assert!(sign(g,private_key,e, temporary_key) == None);
+            assert!(sign(g,private_key,e.bytes(), temporary_key) == None);
         }
     }
 }
